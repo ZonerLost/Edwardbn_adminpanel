@@ -1,0 +1,18 @@
+@import "tailwindcss";
+
+@theme{
+  --color-primary: #f2a121;
+  --color-secondary: #F0F0F3;
+  --color-tertiary: #515151;
+  --color-quinary: #D1CCCB;
+  --color-senary: #FFFFFF80;
+  --color-septenary: #EDEDED;
+}
+
+body{
+  background-color: #F0F0F3;
+  color: var(--color-tertiary);
+  font-family: "Inter", sans-serif;
+  font-optical-sizing: auto;
+  font-style: normal;
+}
