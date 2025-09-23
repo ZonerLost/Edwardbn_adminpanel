@@ -5,7 +5,7 @@ import { FaQuoteLeft } from "react-icons/fa6";
 import { Link } from "react-router-dom";
 
 import Header from "../components/partials/header";
-import ChartOne from "../components/dashboard/chartOne";
+import ChartOne from "../components/dashboard/ChartOne";
 import {
   getDashboardCounts,
   getUsersTimeSeries,
