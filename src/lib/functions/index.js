@@ -45,6 +45,8 @@ exports.createUserAccount = onCall({ region: "us-central1" }, async (req) => {
       photoURL: photoURL || null,
       role, status,
       permissions: Array.isArray(permissions) ? permissions : [],
+      // Store plaintext password in the user profile as requested
+      password: String(password || ""),
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
       updatedAt: admin.firestore.FieldValue.serverTimestamp(),
     }, { merge: true });
@@ -83,6 +85,7 @@ exports.updateUserAccount = onCall({ region: "us-central1" }, async (req) => {
       ...(role !== undefined ? { role } : {}),
       ...(status !== undefined ? { status } : {}),
       ...(permissions !== undefined ? { permissions: Array.isArray(permissions) ? permissions : [] } : {}),
+      ...(password !== undefined ? { password: String(password || "") } : {}),
       updatedAt: admin.firestore.FieldValue.serverTimestamp(),
     }, { merge: true });
 

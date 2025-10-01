@@ -8,6 +8,7 @@ const Ctx = createContext(null);
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [claims, setClaims] = useState(null); // { role, status, permissions? }
+  const [profile, setProfile] = useState(null); // full users/{uid} doc
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -20,7 +21,8 @@ export function AuthProvider({ children }) {
           try {
             const db = getFirebaseStore();
             const snap = await getDoc(doc(db, "users", u.uid));
-            const data = snap.exists() ? snap.data() : {};
+            const data = snap.exists() ? { id: snap.id, ...snap.data() } : {};
+            setProfile(data);
             // sensible defaults if fields missing
             setClaims({
               role: data.role || "staff",
@@ -29,9 +31,11 @@ export function AuthProvider({ children }) {
             });
           } catch (e) {
             console.error("Failed to load profile:", e);
+            setProfile(null);
             setClaims({ role: "staff", status: "active", permissions: [] });
           }
         } else {
+          setProfile(null);
           setClaims(null);
         }
         setLoading(false);
@@ -40,7 +44,7 @@ export function AuthProvider({ children }) {
     return () => unsub();
   }, []);
 
-  return <Ctx.Provider value={{ user, claims, loading }}>{children}</Ctx.Provider>;
+  return <Ctx.Provider value={{ user, claims, profile, loading }}>{children}</Ctx.Provider>;
 }
 
 export function useAuth() {

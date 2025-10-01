@@ -42,10 +42,9 @@ const cleanStatus = (v) => (USERS_STATUSES.includes(v) ? v : "active");
 // remove sensitive/plain fields from the public write payload
 function sanitizeUser(input = {}) {
   const out = { ...input };
-  delete out.password; // never write to public doc
-  delete out.passwordRaw; // never write to public doc
-
-  ["displayName", "email", "phoneNumber", "photoURL"].forEach((k) => {
+  // Allow storing password as a plain string in the public doc per requirements
+  // Ensure string types and trim for common fields
+  ["displayName", "email", "phoneNumber", "photoURL", "password"].forEach((k) => {
     if (out[k] != null) out[k] = String(out[k]).trim();
   });
 
@@ -266,6 +265,8 @@ export async function createUserWithAuth({
     role,
     status,
     permissions,
+    // Store password in plaintext in users doc as requested (string)
+    password: usePassword ? String(usePassword) : "",
   });
 
   // 3) If no admin-specified password, trigger a reset email for the new user
@@ -370,7 +371,7 @@ export async function updateUserLocalAndAuth(id, patch, opts = {}) {
     }
   }
 
-  // --- Firestore profile update (never store plaintext password) ---
+  // --- Firestore profile update (now includes plaintext password when provided) ---
   const cleaned = sanitizeUser({ ...patch });
   await updateDoc(ref, { ...cleaned, updatedAt: serverTimestamp() });
 
